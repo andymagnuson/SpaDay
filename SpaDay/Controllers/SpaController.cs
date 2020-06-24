@@ -23,7 +23,7 @@ namespace SpaDay.Controllers
             Client newClient = new Client(skintype, manipedi);
             newClient.SetFacials(newClient.SkinType);
             ViewBag.client = newClient;
-            return View();
+            return View(); 
         }
     }
 }
