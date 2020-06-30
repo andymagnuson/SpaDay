@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SpaDay.Models;
+using SpaDay.ViewModel;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -14,30 +15,39 @@ namespace SpaDay.Controllers
         // GET: /<controller>/
         public IActionResult Index()
         {
+            
             return View();
         }
 
         public IActionResult Add()
         {
-            return View();
+            AddUserViewModel addUserViewModel = new AddUserViewModel();            
+            return View(addUserViewModel);
         }
 
         [HttpPost]
-        [Route("/user")]
-        public IActionResult SubmitAddUserForm(User newUser, string verify)
+        [Route("/user/add")]        
+        public IActionResult SubmitAddUserForm(AddUserViewModel addUserViewModel)
         {
-            if (newUser.Password == verify)
+            if (ModelState.IsValid)
             {
-                ViewBag.user = newUser;
-                return View("Index");
+                if (addUserViewModel.Password == addUserViewModel.VerifyPassword)
+                {
+                    User newUser = new User
+                    {
+                        Username = addUserViewModel.Username,
+                        Email = addUserViewModel.Email,
+                        Password = addUserViewModel.Password
+                    };
+                    return View("Index", newUser);
+                }
+                else
+                {     
+                    ViewBag.error = "Passwords don't match";
+                    return View("Add", addUserViewModel);
+                }
             }
-            else
-            {
-                ViewBag.error = "Passwords do not match! Try again!";
-                ViewBag.userName = newUser.Username;
-                ViewBag.eMail = newUser.Email;
-                return View("Add");
-            }
+            return View("Add", addUserViewModel);
         }
 
     }
